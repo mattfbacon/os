@@ -16,4 +16,5 @@ long_mode_start:
 
 	call kernel_main
 
+	cli ; so nothing happens after we're done running kernel_main
 	hlt
