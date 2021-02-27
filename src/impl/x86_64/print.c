@@ -41,9 +41,9 @@ void print_newline() {
 		return;
 	}
 
-	for (size_t row = 1; row < NUM_ROWS; row++) {
-		for (size_t col = 0; col < NUM_COLS; col++) {
-			buffer[col + NUM_COLS * (row - 1)] = buffer[col + NUM_COLS * row];
+	for (size_t cur_row = 1; cur_row < NUM_ROWS; cur_row++) {
+		for (size_t cur_col = 0; cur_col < NUM_COLS; cur_col++) {
+			buffer[cur_col + NUM_COLS * (cur_row - 1)] = buffer[cur_col + NUM_COLS * cur_row];
 		}
 	}
 
@@ -65,7 +65,7 @@ void print_char(char character) {
 	col++;
 }
 
-void print_str(char* str) {
+void print_str(const char* str) {
 	for (; *str != '\0'; str += sizeof(char)) {
 		print_char(*str);
 	}
@@ -73,4 +73,12 @@ void print_str(char* str) {
 
 void print_set_color(uint8_t fore, uint8_t back) {
 	color = fore | (back << 4);
+}
+
+void print_set_color_raw(uint8_t raw_color) {
+	color = raw_color;
+}
+
+void print_ensure_line() {
+	if (col != 0) print_newline();
 }
