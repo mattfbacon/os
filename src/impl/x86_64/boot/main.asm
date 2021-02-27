@@ -2,7 +2,6 @@ global start
 extern long_mode_start
 
 RK equ 0x0c ; Red on blacK
-WG equ 0x2f ; White on Green
 
 section .text
 bits 32
