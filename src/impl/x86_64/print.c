@@ -38,6 +38,7 @@ void print_newline() {
 
 	if (row < NUM_ROWS - 1) {
 		row++;
+		return;
 	}
 
 	for (size_t row = 1; row < NUM_ROWS; row++) {
