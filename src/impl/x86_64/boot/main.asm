@@ -163,7 +163,12 @@ section .rodata
 gdt64:
 	dq 0 ; zero entry
 .code_segment: equ $ - gdt64
-	dq (1 << 43) | (1 << 44) | (1 << 47) | (1 << 53) ; code segment: executable, code/data segment, present, 64-bit
-.pointer:
-	dw $ - gdt64 - 1
-	dq gdt64
+	dw 0x00_00 ; limit bits 0:15
+	dw 0x00_00 ; base bits 0:15
+	db 0x00 ; base bits 16:23
+	db 0b10011000 ; access byte: present, (2 bits) ring 0, code/data segment, executable, conforming selector (irrelevant because we are in ring 0), not readable, accessed
+	db 0b00100000 ; (0:3) flags (0010 = 64-bit), (4:7) limit bits 16:19
+	db 0x00 ; base bits 24:31
+.pointer: ; the GDT descriptor
+	dw $ - gdt64 - 1 ; size - 1
+	dq gdt64 ; offset
