@@ -12,6 +12,7 @@ start:
 	call check_multiboot
 	call check_cpuid
 	call check_long_mode
+	call check_apic
 
 	call setup_page_tables
 	call enable_paging
@@ -73,6 +74,17 @@ check_long_mode:
 	ret
 .no_long_mode:
 	mov al, 'L'
+	jmp error
+
+check_apic:
+	mov eax, 0x01
+	cpuid
+	test edx, 1 << 9
+	jz .no_apic
+
+	ret
+.no_apic:
+	mov al, 'A'
 	jmp error
 
 setup_page_tables:
