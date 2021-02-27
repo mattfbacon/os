@@ -15,8 +15,6 @@ global irq13
 global irq14
 global irq15
 
-global load_idt
-
 extern irq0_handler
 extern irq1_handler
 extern irq2_handler
