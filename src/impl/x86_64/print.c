@@ -57,7 +57,7 @@ void print_char(char character) {
 	if (col > NUM_COLS) {
 		print_newline();
 	}
-	buffer[POS] = (struct Char){
+	buffer[POS] = (struct Char) {
 		.character = (uint8_t) character, .color = color
 	};
 
