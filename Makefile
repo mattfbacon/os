@@ -11,7 +11,7 @@ x86_64_object_files := $(x86_64_c_object_files) $(x86_64_asm_object_files)
 
 MKDIRP = mkdir -p
 CC := gcc
-CFLAGS := -c -I src/intf -ffreestanding -m64 -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -O2
+CFLAGS := -c -I src/intf -ffreestanding -m64 -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -O2 -mno-red-zone
 AS := nasm
 ASFLAGS := -f elf64
 LD := ld
