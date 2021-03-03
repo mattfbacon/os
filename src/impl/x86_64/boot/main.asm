@@ -16,6 +16,7 @@ start:
 	call setup_page_tables
 	call enable_paging
 
+	cli ; likely redundant but is a best practice
 	lgdt [gdt64.pointer]
 
 	lidt [idt64.pointer]
