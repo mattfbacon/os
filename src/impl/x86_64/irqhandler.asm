@@ -32,123 +32,139 @@ extern irq13_handler
 extern irq14_handler
 extern irq15_handler
 
-%macro push64 0
-; the registers that need to be saved according to GCC calling convention (see https://stackoverflow.com/a/14486309/4945014)
-push rax
-push rcx
-push rdx
-push r8
-push r9
-push r10
-push r11
-push rsi
-push rdi
+%macro pushaq 0
+	push rax
+	push rcx
+	push rdx
+	push rsi
+	push rdi
+	push r8
+	push r9
+	push r10
+	push r11
 %endmacro
 
-%macro pop64 0
-pop rdi
-pop rsi
-pop r11
-pop r10
-pop r9
-pop r8
-pop rdx
-pop rcx
-pop rax
+%macro popaq 0
+	pop r11
+	pop r10
+	pop r9
+	pop r8
+	pop rdi
+	pop rsi
+	pop rdx
+	pop rcx
+	pop rax
 %endmacro
 
 irq0:
-	push64
+	pushaq
+	cld
 	call irq0_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq1:
-	push64
+	pushaq
+	cld
 	call irq1_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq2:
-	push64
+	pushaq
+	cld
 	call irq2_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq3:
-	push64
+	pushaq
+	cld
 	call irq3_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq4:
-	push64
+	pushaq
+	cld
 	call irq4_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq5:
-	push64
+	pushaq
+	cld
 	call irq5_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq6:
-	push64
+	pushaq
+	cld
+	mov rdi, [esp + 72] ; pass address of offending instruction to handler (72 to avoid the 9 qword pushed registers)
 	call irq6_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq7:
-	push64
+	pushaq
+	cld
 	call irq7_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq8:
-	push64
+	pushaq
+	cld
 	call irq8_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq9:
-	push64
+	pushaq
+	cld
 	call irq9_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq10:
-	push64
+	pushaq
+	cld
 	call irq10_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq11:
-	push64
+	pushaq
+	cld
 	call irq11_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq12:
-	push64
+	pushaq
+	cld
 	call irq12_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq13:
-	push64
+	pushaq
+	cld
 	call irq13_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq14:
-	push64
+	pushaq
+	cld
 	call irq14_handler
-	pop64
-	iret
+	popaq
+	iretq
  
 irq15:
-	push64
+	pushaq
+	cld
 	call irq15_handler
-	pop64
-	iret
+	popaq
+	iretq

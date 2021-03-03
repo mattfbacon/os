@@ -19,9 +19,6 @@ start:
 	cli ; likely redundant but is a best practice
 	lgdt [gdt64.pointer]
 
-	lidt [idt64.pointer]
-	sti
-
 	jmp gdt64.code_segment:long_mode_start
 
 	hlt
@@ -177,8 +174,3 @@ gdt64:
 .pointer: ; the GDT descriptor
 	dw $ - gdt64 - 1 ; size - 1
 	dq gdt64 ; offset
-
-idt64:
-.pointer:
-	dw $ - idt64 - 1 ; size - 1
-	dq idt64 ; offset
