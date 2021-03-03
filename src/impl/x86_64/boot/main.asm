@@ -162,15 +162,23 @@ stack_bottom:
 stack_top:
 
 section .rodata
+
 gdt64:
 	dq 0 ; zero entry
 .code_segment: equ $ - gdt64
-	dw 0x00_00 ; limit bits 0:15
+	dw 0xffff ; limit bits 0:15
 	dw 0x00_00 ; base bits 0:15
 	db 0x00 ; base bits 16:23
-	db 0b10011000 ; access byte: present, (2 bits) ring 0, code/data segment, executable, conforming selector (irrelevant because we are in ring 0), not readable, accessed
-	db 0b00100000 ; (0:3) flags (0010 = 64-bit), (4:7) limit bits 16:19
+	db 0b1001_1010 ; access byte: present, (2 bits) ring 0, code/data segment, executable, code out of ring 0 cannot call this code, readable, not accessed
+	db 0b1010_1111 ; (0) 4kib blocks for limit, (1:3) flags (010 = 64-bit), (4:7) limit bits 16:19
 	db 0x00 ; base bits 24:31
+.data_segment: equ $ - gdt64
+	dw 0xffff
+	dw 0x00_00
+	db 0x00
+	db 0b1001_0010 ; not executable, writable
+	db 0b1010_1111
+	db 0x00
 .pointer: ; the GDT descriptor
 	dw $ - gdt64 - 1 ; size - 1
 	dq gdt64 ; offset
