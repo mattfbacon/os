@@ -12,6 +12,12 @@ start:
 	call check_cpuid
 	call check_long_mode
 	call check_apic
+	call check_fpu
+
+	; setup the FPU
+	mov edx, cr4
+	or edx, (1 << 9) | (1 << 10) ; set SSE support (allow ops) and XF Exception (want to have this to be able to handle SSE exceptions properly)
+	mov cr4, edx
 
 	call setup_page_tables
 	call enable_paging
@@ -87,6 +93,21 @@ check_apic:
 .no_apic:
 	mov al, 'A'
 	jmp error
+
+check_fpu:
+	mov edx, cr0
+	and edx, (-1) - ((1 << 4) + (1 << 2)) ; clear TS (task switch; causes exceptions for ops) and EM (allow FPU ops)
+	mov cr0, edx
+	fninit ; load defaults to FPU
+	fnstsw [.testword] ; try to save status
+	cmp word [.testword], 0 ; check if status was saved
+	jne .no_fpu
+
+	ret
+.no_fpu:
+	mov al, 'F'
+	jmp error
+.testword: dw 0x55aa ; garbage
 
 setup_page_tables:
 	mov eax, page_table_l3
