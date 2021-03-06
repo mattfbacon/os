@@ -79,13 +79,13 @@ void irq_handler(const unsigned char irq, const void* instr_ptr) {
 			print_newline();
 			dbg_halt();
 			pic_sendEOI(6);
-			break;
+			return;
 		case 0x7:
 			if (pic_get_isr() & (1 << 7)) {
 				// real interrupt
 				pic_sendEOI(7);
 			} // else spurious, ignore
-			break;
+			return;
 		case 0xf:
 			if (pic_get_isr() & (1 << 15)) {
 				// real interrupt
@@ -94,7 +94,7 @@ void irq_handler(const unsigned char irq, const void* instr_ptr) {
 				// spurious, but still need to resolve controller
 				pic_sendEOI(7);
 			}
-			break;
+			return;
 		case 0x20: // timer interrupt, nothing to do for now, ignore
 			break;
 		default:
