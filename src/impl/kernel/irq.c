@@ -69,103 +69,45 @@ uint16_t pic_get_isr() {
 	return __pic_get_irq_reg(PIC_READ_ISR);
 }
 
-void irq0_handler(void) {
-	// Divide-by-zero
-	pic_sendEOI(0);
-}
-
-void irq1_handler(void) {
-	// Debug
-	pic_sendEOI(1);
-}
-
-void irq2_handler(void) {
-	// Non-maskable Interrupt
-	pic_sendEOI(2);
-}
-
-void irq3_handler(void) {
-	// Breakpoint
-	pic_sendEOI(3);
-}
-
-void irq4_handler(void) {
-	// Overflow
-	pic_sendEOI(4);
-}
-
-void irq5_handler(void) {
-	// Bound Range Exceeded
-	pic_sendEOI(5);
-}
-
-void irq6_handler(void* opcode_addr) {
-	// Invalid Opcode
-	print_ensure_line();
-	print_str("Got invalid opcode at ");
-	print_ptr_hex(opcode_addr);
-	print_char('\n');
-	asm volatile ( "xchg %bx, %bx\n\tcli\n\thlt" );
-	pic_sendEOI(6);
-}
-
-void irq7_handler(void) {
-	// Device not Available / Spurious (on controller)
-	if (pic_get_isr() & (1 << 7)) {
-		// real interrupt
-		pic_sendEOI(7);
-	} else {
-		// spurious, ignore
+void irq_handler(const unsigned char irq, const void* instr_ptr) {
+	switch (irq) {
+		case 0x6:
+			print_ensure_line();
+			print_set_color(PRINT_COLOR_BLACK, PRINT_COLOR_RED);
+			print_str("Got invalid opcode at ");
+			print_ptr_hex((void*)instr_ptr);
+			print_newline();
+			dbg_halt();
+			pic_sendEOI(6);
+			break;
+		case 0x7:
+			if (pic_get_isr() & (1 << 7)) {
+				// real interrupt
+				pic_sendEOI(7);
+			} // else spurious, ignore
+			break;
+		case 0xf:
+			if (pic_get_isr() & (1 << 15)) {
+				// real interrupt
+				pic_sendEOI(15);
+			} else {
+				// spurious, but still need to resolve controller
+				pic_sendEOI(7);
+			}
+			break;
+		case 0x20: // timer interrupt, nothing to do for now, ignore
+			break;
+		default:
+			print_ubyte_hex(irq); print_char(' ');
+			break;
 	}
+	pic_sendEOI(irq);
 }
 
-void irq8_handler(void) {
-	// Double Fault
-	pic_sendEOI(8);
-}
-
-void irq9_handler(void) {
-	// not used
-	pic_sendEOI(9);
-}
-
-void irq10_handler(void) {
-	// Invalid TSS
-	pic_sendEOI(10);
-}
-
-void irq11_handler(void) {
-	// Segment not Present
-	pic_sendEOI(11);
-}
-
-void irq12_handler(void) {
-	// Stack-Segment Fault
-	pic_sendEOI(12);
-}
-
-void irq13_handler(void) {
-	// General Protection Fault
-	pic_sendEOI(13);
-}
-
-void irq14_handler(void) {
-	// Page Fault
-	pic_sendEOI(14);
-}
-
-void irq15_handler(void) {
-	// Reserved / Spurious (on follower)
-	if (pic_get_isr() & (1 << 15)) {
-		// real interrupt
-		pic_sendEOI(15);
-	} else {
-		// spurious, but still need to resolve controller
-		pic_sendEOI(7);
-	}
-}
-
-extern void irq0() asm("irq0"), irq1() asm("irq1"); // there are fifteen total but we only need the first two to calculate the rest
+// no code is actually at irq_limit, and irq_base should not be called, but
+// it's convenient to have them as functions because GCC will make them
+// pointers automatically when they're used in an expression (no & required).
+extern void irq_base() asm("irq_base"), irq_limit() asm("irq_limit"); // 256 interrupts
 
 struct __attribute__((__packed__)) IDTDescr {
 	uint16_t offset_1;  // offset bits 0..15
@@ -182,15 +124,17 @@ struct __attribute__((__packed__)) IDTPointer {
 	uint64_t offset;
 };
 
+// would do the same function trick here but we use array indexing which is
+// syntactic sugar that I don't want to give up
 extern struct IDTDescr idt64 asm("idt64");
 extern struct IDTPointer idt64_pointer asm("idt64.pointer");
 
 #define CODE_SEGMENT_OFFSET 0x0008
 
 void setup_idt() {
-	const ptrdiff_t irq_size = irq1 - irq0;
+	const ptrdiff_t irq_size = (irq_limit - irq_base) / 256;
 	for (size_t i = 0; i < 256; i++) {
-		const uint64_t this_irq_ptr = (uint64_t)irq0 + irq_size * (i % 16); // all the irqs are the same size so calculate it. max is 15 (implemented)
+		const uint64_t this_irq_ptr = (uint64_t)irq_base + (irq_size * i); // all the irqs are the same size (just wrappers around C functions), so calculate the address.
 		(&idt64)[i] = (struct IDTDescr) {
 			(uint16_t)this_irq_ptr,
 			(uint16_t)CODE_SEGMENT_OFFSET,

@@ -19,3 +19,7 @@ static inline uint8_t inb(const uint16_t port) {
 		: "Nd"(port) );
 	return ret;
 }
+
+static inline void dbg_halt() {
+	asm volatile ( "xchg %bx, %bx\n\tcli\n\thlt" );
+}
