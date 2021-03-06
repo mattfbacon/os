@@ -23,7 +23,7 @@
 #define ICW4_SFNM      0x10 /* Special fully nested (not) */
 
 void pic_sendEOI(const unsigned char irq) {
-	if (irq != 0) { print_ubyte_hex(irq); print_char(' '); }
+	// DEBUG: if (irq != 0) { print_ubyte_hex(irq); print_char(' '); }
 	if (irq >= 8) outb(FLWR_PIC_CMD, PIC_EOI);
 	outb(CTLR_PIC_CMD, PIC_EOI);
 }
