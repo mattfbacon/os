@@ -200,6 +200,20 @@ gdt64:
 	db 0b1001_0010 ; not executable, writable
 	db 0b1010_1111
 	db 0x00
+.ring3_code: equ $ - gdt64
+	dw 0xffff
+	dw 0x0000
+	db 0x00
+	db 0b1111_1010 ; (0) page gran, (1-2) ring 3, (5) conforming bit is irrelevant
+	db 0b1010_1111
+	db 0x00
+.ring3_data: equ $ - gdt64
+	dw 0xffff
+	dw 0x0000
+	db 0x00
+	db 0b1111_0010 ; same but bit 4 is clear for a data segment
+	db 0b1010_1111
+	db 0x00
 .pointer: ; the GDT descriptor
 	dw $ - gdt64 - 1 ; size - 1
 	dq gdt64 ; offset
