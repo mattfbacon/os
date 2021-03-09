@@ -87,7 +87,7 @@ void irq_handler(const unsigned char irq, const void* instr_ptr) {
 			print_ptr_hex((void*)instr_ptr);
 			print_newline();
 			dbg_halt();
-			pic_sendEOI(6);
+			pic_sendEOI(irq);
 			return;
 		case 0x20: // timer interrupt, nothing to do for now, ignore
 			break;
