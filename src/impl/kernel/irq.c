@@ -1,6 +1,8 @@
 #include "print.h"
 #include "io.h"
 
+#define KBD_DATA 0x60
+
 #define CTLR_PIC 0x20
 #define FLWR_PIC 0xa0
 #define CTLR_PIC_CMD (CTLR_PIC)
@@ -96,6 +98,10 @@ void irq_handler(const unsigned char irq, const void* instr_ptr) {
 			}
 			return;
 		case 0x20: // timer interrupt, nothing to do for now, ignore
+			break;
+		case 0x21: // keyboard
+			print_set_color(PRINT_COLOR_LIGHT_GRAY, PRINT_COLOR_BLACK);
+			print_ubyte_hex(inb(KBD_DATA)); print_char(' ');
 			break;
 		default:
 			print_ubyte_hex(irq); print_char(' ');
