@@ -1,3 +1,5 @@
+section .text
+
 %macro pushaq 0
 	push rax
 	push rcx
