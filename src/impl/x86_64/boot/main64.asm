@@ -20,8 +20,6 @@ long_mode_start:
 
 	lidt [idt64.pointer]
 
-	mov rdi, 0x20 ; new controller PIC offset
-	mov rsi, 0x28 ; new follower PIC offset
 	call pic_remap
 
 	sti

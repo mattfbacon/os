@@ -3,6 +3,11 @@
 
 #define KBD_DATA 0x60
 
+#define CTLR_IRQ_OFFSET 0x20
+#define FLWR_IRQ_OFFSET 0x28
+#define PIC_NUM_INTERRUPTS 8
+#define XLATE_TO_CTLR_IRQ(flwr_irq) ((flwr_irq) - (FLWR_IRQ_OFFSET - CTLR_IRQ_OFFSET))
+
 #define CTLR_PIC 0x20
 #define FLWR_PIC 0xa0
 #define CTLR_PIC_CMD (CTLR_PIC)
@@ -26,19 +31,21 @@
 
 void pic_sendEOI(const unsigned char irq) {
 	// DEBUG: if (irq != 0) { print_ubyte_hex(irq); print_char(' '); }
-	if (irq >= 8) outb(FLWR_PIC_CMD, PIC_EOI);
-	outb(CTLR_PIC_CMD, PIC_EOI);
+	if (irq >= CTLR_IRQ_OFFSET && irq < FLWR_IRQ_OFFSET + PIC_NUM_INTERRUPTS) {
+		if (irq >= FLWR_IRQ_OFFSET) outb(FLWR_PIC_CMD, PIC_EOI);
+		outb(CTLR_PIC_CMD, PIC_EOI);
+	}
 }
 
-void pic_remap(const int offset1, const int offset2) {
+void pic_remap() {
 	const unsigned char ctlr_mask = inb(CTLR_PIC_DATA), flwr_mask = inb(FLWR_PIC_DATA);
 	outb(CTLR_PIC_CMD, ICW1_INIT | ICW1_ICW4); // start init sequence in cascade mode
 	io_wait();
 	outb(FLWR_PIC_CMD, ICW1_INIT | ICW1_ICW4);
 	io_wait();
-	outb(CTLR_PIC_DATA, offset1); // controller offset
+	outb(CTLR_PIC_DATA, CTLR_IRQ_OFFSET); // controller offset
 	io_wait();
-	outb(FLWR_PIC_DATA, offset2); // follower offset
+	outb(FLWR_PIC_DATA, FLWR_IRQ_OFFSET); // follower offset
 	io_wait();
 	outb(CTLR_PIC_DATA, 2 << 1); // tell controller about follower at IRQ2
 	io_wait();
@@ -82,27 +89,27 @@ void irq_handler(const unsigned char irq, const void* instr_ptr) {
 			dbg_halt();
 			pic_sendEOI(6);
 			return;
-		case 0x7:
-			if (pic_get_isr() & (1 << 7)) {
-				// real interrupt
-				pic_sendEOI(7);
-			} // else spurious, ignore
-			return;
-		case 0xf:
-			if (pic_get_isr() & (1 << 15)) {
-				// real interrupt
-				pic_sendEOI(15);
-			} else {
-				// spurious, but still need to resolve controller
-				pic_sendEOI(7);
-			}
-			return;
 		case 0x20: // timer interrupt, nothing to do for now, ignore
 			break;
 		case 0x21: // keyboard
 			print_set_color(PRINT_COLOR_LIGHT_GRAY, PRINT_COLOR_BLACK);
 			print_ubyte_hex(inb(KBD_DATA)); print_char(' ');
 			break;
+		case CTLR_IRQ_OFFSET + PIC_NUM_INTERRUPTS - 1: // controller possible spurious
+			if (pic_get_isr() & (1 << 7)) {
+				// real interrupt
+				pic_sendEOI(irq);
+			} // else spurious, ignore
+			return;
+		case FLWR_IRQ_OFFSET + PIC_NUM_INTERRUPTS - 1: // follower possible spurious
+			if (pic_get_isr() & (1 << 15)) {
+				// real interrupt
+				pic_sendEOI(irq);
+			} else {
+				// spurious, but still need to resolve controller
+				pic_sendEOI(XLATE_TO_CTLR_IRQ(irq));
+			}
+			return;
 		default:
 			print_ubyte_hex(irq); print_char(' ');
 			break;
