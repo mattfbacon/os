@@ -9,11 +9,13 @@ x86_64_asm_object_files := $(patsubst src/impl/x86_64/%.asm, build/x86_64/%.o, $
 
 x86_64_object_files := $(x86_64_c_object_files) $(x86_64_asm_object_files)
 
+include_dir := src/intf
+
 MKDIRP = mkdir -p
 CC := gcc
-CFLAGS := -c -I src/intf -ffreestanding -m64 -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -O2 -mno-red-zone
-AS := nasm
-ASFLAGS := -f elf64
+CFLAGS := -c -I $(include_dir) -ffreestanding -m64 -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -O2 -mno-red-zone
+AS := yasm
+ASFLAGS := -r nasm -p nasm -f elf64 -i $(include_dir)
 LD := ld
 LDFLAGS := -n -o dist/x86_64/kernel.bin -T targets/x86_64/linker.ld
 

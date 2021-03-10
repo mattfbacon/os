@@ -111,18 +111,18 @@ check_fpu:
 
 setup_page_tables:
 	mov eax, page_table_l3
-	or eax, 0b11 ; present, writable
+	or eax, 11b ; present, writable
 	mov [page_table_l4], eax
 
 	mov eax, page_table_l2
-	or eax, 0b11 ; present, writable
+	or eax, 11b ; present, writable
 	mov [page_table_l3], eax
 
 	mov ecx, 0 ; counter
 .loop:
 	mov eax, 2 * 1024 * 1024 ; 2 MiB
 	mul ecx
-	or eax, 0b1000_0011 ; huge page, present, writable
+	or eax, 1000_0011b ; huge page, present, writable
 	mov [page_table_l2 + ecx * 8], eax
 
 	inc ecx
@@ -190,29 +190,29 @@ gdt64:
 	dw 0xffff ; limit bits 0:15
 	dw 0x00_00 ; base bits 0:15
 	db 0x00 ; base bits 16:23
-	db 0b1001_1010 ; access byte: present, (2 bits) ring 0, code/data segment, executable, code out of ring 0 cannot call this code, readable, not accessed
-	db 0b1010_1111 ; (0) 4kib blocks for limit, (1:3) flags (010 = 64-bit), (4:7) limit bits 16:19
+	db 1001_1010b ; access byte: present, (2 bits) ring 0, code/data segment, executable, code out of ring 0 cannot call this code, readable, not accessed
+	db 1010_1111b ; (0) 4kib blocks for limit, (1:3) flags (010 = 64-bit), (4:7) limit bits 16:19
 	db 0x00 ; base bits 24:31
 .data_segment: equ $ - gdt64
 	dw 0xffff
 	dw 0x00_00
 	db 0x00
-	db 0b1001_0010 ; not executable, writable
-	db 0b1010_1111
+	db 1001_0010b ; not executable, writable
+	db 1010_1111b
 	db 0x00
 .ring3_code: equ $ - gdt64
 	dw 0xffff
 	dw 0x0000
 	db 0x00
-	db 0b1111_1010 ; (0) page gran, (1-2) ring 3, (5) conforming bit is irrelevant
-	db 0b1010_1111
+	db 1111_1010b ; (0) page gran, (1-2) ring 3, (5) conforming bit is irrelevant
+	db 1010_1111b
 	db 0x00
 .ring3_data: equ $ - gdt64
 	dw 0xffff
 	dw 0x0000
 	db 0x00
-	db 0b1111_0010 ; same but bit 4 is clear for a data segment
-	db 0b1010_1111
+	db 1111_0010b ; same but bit 4 is clear for a data segment
+	db 1010_1111b
 	db 0x00
 .pointer: ; the GDT descriptor
 	dw $ - gdt64 - 1 ; size - 1
