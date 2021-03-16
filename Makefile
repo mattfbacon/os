@@ -14,8 +14,8 @@ include_dir := src/intf
 MKDIRP = mkdir -p
 CC := gcc
 CFLAGS := -c -I $(include_dir) -ffreestanding -m64 -Wall -Wextra -Werror -nostdlib -nostartfiles -nodefaultlibs -fno-builtin -fno-stack-protector -O2 -mno-red-zone
-AS := yasm
-ASFLAGS := -r nasm -p nasm -f elf64 -i $(include_dir)
+AS := nasm
+ASFLAGS := -f elf64 -i $(include_dir)
 LD := ld
 LDFLAGS := -n -o dist/x86_64/kernel.bin -T targets/x86_64/linker.ld
 
