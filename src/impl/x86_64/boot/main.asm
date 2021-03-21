@@ -236,21 +236,21 @@ gdt64:
 	dw 0xffff
 	dw 0x00_00
 	db 0x00
-	db 1001_0010b ; not executable, writable
+	db 1001_0010b ; (4) not executable, (6) writable
 	db 1010_1111b
 	db 0x00
 .ring3_code: equ $ - gdt64
 	dw 0xffff
 	dw 0x0000
 	db 0x00
-	db 1111_1010b ; (0) page gran, (1-2) ring 3, (5) conforming bit is irrelevant
+	db 1111_1010b ; (1:2) ring 3, (5) conforming bit is irrelevant
 	db 1010_1111b
 	db 0x00
 .ring3_data: equ $ - gdt64
 	dw 0xffff
 	dw 0x0000
 	db 0x00
-	db 1111_0010b ; same but bit 4 is clear for a data segment
+	db 1111_0010b ; (4) data segment
 	db 1010_1111b
 	db 0x00
 .tss_abs:
