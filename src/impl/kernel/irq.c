@@ -87,6 +87,22 @@ void irq_handler(const unsigned char irq, const void*const rip, const uint32_t e
 			print_ptr_hex((void*)rip); print_newline();
 			dbg_halt();
 			return;
+		case 0xd:
+			print_ensure_line();
+			print_set_color(PRINT_COLOR_WHITE, PRINT_COLOR_BLUE);
+			print_str("#GP!! ");
+			print_ptr_hex((void*)rip); print_newline();
+			print_ubyte_hex((unsigned char)err_code); print_newline();
+			dbg_halt();
+			return;
+		case 0xe:
+			print_ensure_line();
+			print_set_color(PRINT_COLOR_WHITE, PRINT_COLOR_BROWN);
+			print_str("#PF!! ");
+			print_ptr_hex((void*)rip); print_newline();
+			print_ubyte_bin((unsigned char)err_code); print_newline();
+			dbg_halt();
+			return;
 		case 0x20: // timer interrupt, nothing to do for now, ignore
 			break;
 		case 0x21: // keyboard
@@ -107,6 +123,9 @@ void irq_handler(const unsigned char irq, const void*const rip, const uint32_t e
 				// spurious, but still need to resolve controller
 				pic_sendEOI(XLATE_TO_CTLR_IRQ(irq));
 			}
+			return;
+		case 0x80:
+			print_str("INT");
 			return;
 		default:
 			print_ubyte_hex(irq); print_char(' ');
