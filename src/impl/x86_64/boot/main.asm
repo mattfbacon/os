@@ -182,8 +182,47 @@ stack_bottom:
 	resb 1024 * 16 ; 16kb
 stack_top:
 
-section .rodata
+section .data
 
+global tss64
+global tss64.rsp0
+tss64:
+; reserved
+	dd 0
+.rsp0:
+	dq 0
+.rsp1:
+	dq 0
+.rsp2:
+	dq 0
+; reserved
+	dq 0
+.ist1:
+	dq 0
+.ist2:
+	dq 0
+.ist3:
+	dq 0
+.ist4:
+	dq 0
+.ist5:
+	dq 0
+.ist6:
+	dq 0
+.ist7:
+	dq 0
+; reserved
+	dq 0
+	dw 0
+.iopb:
+	dw tss64.limit
+.limit: equ $ - tss64
+.end:
+
+global gdt64
+global gdt64.tss
+global gdt64.tss_abs
+global gdt64.pointer
 gdt64:
 	dq 0 ; zero entry
 .code_segment: equ $ - gdt64
@@ -214,6 +253,19 @@ gdt64:
 	db 1111_0010b ; same but bit 4 is clear for a data segment
 	db 1010_1111b
 	db 0x00
+.tss_abs:
+.tss: equ $ - gdt64
+	; for structure of this section see https://xem.github.io/minix86/manual/intel-x86-and-64-manual-vol3/o_fe12b1e2a880e0ce-245.html
+	; "tba" sections will be filled in later
+	dw tss64.limit & 0xffff
+	dw 0 ; tba
+	db 0 ; tba
+	db 1110_1001b ; (0) present, (1:2) user mode, (3) TSS/LDT segment, (4) TSS segment, (5) conforming is always 0, (6) not busy, (7) TSS (i.e., not LDT)
+	db (0010b << 4) + ((tss64.limit >> 16) & 0xf) ; (0) byte gran, (1:3) 010 = 64-bit
+	db 0 ; tba
+	; this section added to TSS descriptors in 64-bit mode
+	dd 0 ; tba
+	dd 0 ; some reserved, some zero; not much info about what this section is actually for
 .pointer: ; the GDT descriptor
-	dw $ - gdt64 - 1 ; size - 1
+	dw gdt64.tss - 1 ; size - 1
 	dq gdt64 ; offset
