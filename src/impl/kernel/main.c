@@ -15,6 +15,10 @@ void kernel_main() {
 	kfatal("test fatal\n");
 }
 
+void test_user_function() {
+	print_char('U');
+}
+
 struct __attribute__((packed)) gdt_tss_entry {
 	// see https://xem.github.io/minix86/manual/intel-x86-and-64-manual-vol3/o_fe12b1e2a880e0ce-245.html
 	uint16_t limit_low;

@@ -58,9 +58,23 @@ long_mode_start:
 
 	call kernel_main
 
+	call jump_usermode
+
 halt:
 	hlt
 	jmp halt
+
+extern test_user_function
+global jump_usermode
+jump_usermode:
+	mov rax, rsp
+	; construct an iret stack frame (see https://wiki.osdev.org/Interrupt_Service_Routines#x86-64)
+	push qword (4 * 8) | 3 ; stack selector
+	push rax ; rsp in stack segment
+	pushfq ; rflags
+	push qword (3 * 8) | 3 ; code selector
+	push test_user_function ; rip in code segment
+	iretq
 
 section .bss
 
