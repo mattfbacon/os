@@ -171,13 +171,13 @@ error:
 	hlt
 
 section .bss
-align 1024 * 4
+align 1024 * 4 ; page boundary
 page_table_l4:
-	resb 1024 * 4
+	resq 512
 page_table_l3:
-	resb 1024 * 4
+	resq 512
 page_table_l2:
-	resb 1024 * 4
+	resq 512
 stack_bottom:
 	resb 1024 * 16 ; 16kb
 stack_top:
