@@ -60,9 +60,9 @@ long_mode_start:
 
 	call jump_usermode
 
-halt:
+.halt:
 	hlt
-	jmp halt
+	jmp .halt
 
 extern test_user_function
 global jump_usermode
