@@ -78,16 +78,14 @@ uint16_t pic_get_isr() {
 	return __pic_get_irq_reg(PIC_READ_ISR);
 }
 
-void irq_handler(const unsigned char irq, const void* instr_ptr) {
+void irq_handler(const unsigned char irq, const void*const rip, const uint32_t err_code) {
 	switch (irq) {
 		case 0x6:
 			print_ensure_line();
 			print_set_color(PRINT_COLOR_BLACK, PRINT_COLOR_RED);
 			print_str("Got invalid opcode at ");
-			print_ptr_hex((void*)instr_ptr);
-			print_newline();
+			print_ptr_hex((void*)rip); print_newline();
 			dbg_halt();
-			pic_sendEOI(irq);
 			return;
 		case 0x20: // timer interrupt, nothing to do for now, ignore
 			break;
@@ -139,16 +137,16 @@ struct __attribute__((__packed__)) IDTPointer {
 
 // would do the same function trick here but we use array indexing which is
 // syntactic sugar that I don't want to give up
-extern struct IDTDescr idt64 asm("idt64");
+extern struct IDTDescr idt64[256] asm("idt64");
 extern struct IDTPointer idt64_pointer asm("idt64.pointer");
+extern uint64_t int_table[256] asm("int_table");
 
 #define CODE_SEGMENT_OFFSET 0x0008
 
 void setup_idt() {
-	const ptrdiff_t irq_size = (irq_limit - irq_base) / 256;
 	for (size_t i = 0; i < 256; i++) {
-		const uint64_t this_irq_ptr = (uint64_t)irq_base + (irq_size * i); // all the irqs are the same size (just wrappers around C functions), so calculate the address.
-		(&idt64)[i] = (struct IDTDescr) {
+		const uint64_t this_irq_ptr = int_table[i]; // all the irqs are the same size (just wrappers around C functions), so calculate the address.
+		idt64[i] = (struct IDTDescr) {
 			(uint16_t)this_irq_ptr,
 			(uint16_t)CODE_SEGMENT_OFFSET,
 			0, // no TSS yet
@@ -158,6 +156,6 @@ void setup_idt() {
 			0
 		};
 	}
-	idt64_pointer.size = (uint16_t)((uint64_t)&idt64_pointer - (uint64_t)&idt64 - 1);
-	idt64_pointer.offset = (uint64_t)&idt64;
+	idt64_pointer.size = (uint16_t)((uint64_t)&idt64_pointer - (uint64_t)idt64 - 1);
+	idt64_pointer.offset = (uint64_t)idt64;
 }
