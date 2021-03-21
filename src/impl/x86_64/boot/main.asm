@@ -126,7 +126,7 @@ setup_page_tables:
 	mov [page_table_l2 + ecx * 8], eax
 
 	inc ecx
-	cmp ecx, 512 ; 512 entries in the level 2 table
+	cmp ecx, 16 ; 16 entries in the level 2 table = 32 MiB of memory mapped for the kernel
 	jne .loop
 
 	ret
