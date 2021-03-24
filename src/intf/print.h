@@ -22,8 +22,8 @@ enum {
 	PRINT_COLOR_WHITE = 15,
 };
 
-void print_clear();
-void print_newline();
+void print_clear(void);
+void print_newline(void);
 void print_char(char character);
 void print_str(const char* str);
 
@@ -78,4 +78,4 @@ void print_ldouble(long double num, size_t precision);
 
 void print_set_color(uint8_t fore, uint8_t back);
 void print_set_color_raw(uint8_t raw_color);
-void print_ensure_line();
+void print_ensure_line(void);
