@@ -58,7 +58,7 @@ long_mode_start:
 
 	call kernel_main
 
-	call jump_usermode
+	; call jump_usermode
 
 .halt:
 	hlt
@@ -86,3 +86,31 @@ idt64:
 .pointer:
 	resw 1
 	resq 1
+
+global dynamic_alloc_base
+dynamic_alloc_base: ; the start of the dynamically allocated section of memory (really points to the start of the first header)
+	resq 1
+global num_allocd_sections
+num_allocd_sections: ; the number of sections (32 MiB + 8 KiB header) that have been allocated.
+; if there were more sections allocated then the `mapped_pages` structure would
+; be duplicated to those positions
+	resw 1
+global first_free_page
+first_free_page: ; pointer to the lowest free page
+	resq 1
+global mapped_pages
+mapped_pages:
+	resb 1024 * 8 ; each byte stores the process ID that owns the page (0 would be kernel)
+alignb 1024 * 4
+global user_page_table_l4
+user_page_table_l4:
+	resq 511 * 512
+global user_page_table_l3
+user_page_table_l3:
+	resq 511 * 512
+global user_page_table_l2
+user_page_table_l2:
+	resq 511 * 512 ; for each of 511 l3 entries, there are 512 in l2
+global user_page_table_l1
+user_page_table_l1:
+	resq 511 * 512 ; due to the number of level 1 page tables, each process can be mapped a max of 2 mb unless huge pages are used
