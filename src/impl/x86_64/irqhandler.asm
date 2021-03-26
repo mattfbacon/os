@@ -36,10 +36,11 @@ irq_base:
 	%rep 256
 	int_%[int_num]:
 		%if int_has_error_code(int_num)
-			; the error code is a dword, so if we advance the stack pointer by 2 we can
-			; pretend it's a qword. Then swap with rdx and we end up with rdx on the
-			; stack, and the error code left-shifted by 32 bits in rdx.
-			sub rsp, 2
+			; the error code is a dword, so if we advance the stack pointer by 4
+			; bytes (dword) we can pretend it's a qword. Then swap with rdx and we
+			; end up with rdx on the stack and the error code (left-shifted by 32
+			; bits aka a dword) in rdx.
+			sub rsp, 4
 			xchg rdx, qword [rsp]
 			; undo the left shift
 			shr rdx, 32
