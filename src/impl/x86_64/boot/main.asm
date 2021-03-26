@@ -110,20 +110,20 @@ check_fpu:
 .testword: dw 0x55aa ; garbage
 
 setup_page_tables:
-	mov eax, page_table_l3
+	mov eax, k_page_table_l3
 	or eax, 11b ; present, writable
-	mov [page_table_l4], eax
+	mov [k_page_table_l4], eax
 
-	mov eax, page_table_l2
+	mov eax, k_page_table_l2
 	or eax, 11b ; present, writable
-	mov [page_table_l3], eax
+	mov [k_page_table_l3], eax
 
 	mov ecx, 0 ; counter
 .loop:
 	mov eax, 2 * 1024 * 1024 ; 2 MiB
 	mul ecx
 	or eax, 1000_0011b ; huge page, present, writable
-	mov [page_table_l2 + ecx * 8], eax
+	mov [k_page_table_l2 + ecx * 8], eax
 
 	inc ecx
 	cmp ecx, 16 ; 16 entries in the level 2 table = 32 MiB of memory mapped for the kernel
@@ -133,7 +133,7 @@ setup_page_tables:
 
 enable_paging:
 	; pass page table location to CPU
-	mov eax, page_table_l4
+	mov eax, k_page_table_l4
 	mov cr3, eax
 
 	; enable PAE
@@ -172,11 +172,11 @@ error:
 
 section .bss
 align 1024 * 4 ; page boundary
-page_table_l4:
+k_page_table_l4:
 	resq 512
-page_table_l3:
+k_page_table_l3:
 	resq 512
-page_table_l2:
+k_page_table_l2:
 	resq 512
 stack_bottom:
 	resb 1024 * 16 ; 16kb
