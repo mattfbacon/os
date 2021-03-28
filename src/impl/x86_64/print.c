@@ -56,7 +56,7 @@ void print_char(char character) {
 		print_newline();
 		return;
 	}
-	if (col > NUM_COLS) {
+	if (col >= NUM_COLS) {
 		print_newline();
 	}
 	buffer[POS] = (struct Char) {
