@@ -32,12 +32,12 @@ uint64_t linear_to_physical_addr(const void*const vptr_addr) {
 	table.as_addr = (uint64_t*)get_cr3(); // addr of l4 table
 	table.as_val = table.as_addr[(addr >> 39) & ones(9)] & ~ones(12); // get l3 base (l4 entry) given l4
 	if (table.as_addr[(addr >> 30) & ones(9)] & bit_test(8)) { // huge page 1 GiB
-		return table.as_val + (addr & ones(21)); // get phys addr from phys page
+		return (table.as_val & ~ones(30)) + (addr & ones(30)); // get phys addr from phys page
 	}
 	// not 1 GiB huge page, so we can overwrite the table
 	table.as_val = table.as_addr[(addr >> 30) & ones(9)] & ~ones(12); // get l2 base (l3 entry) given l3
 	if (table.as_addr[(addr >> 21) & ones(9)] & bit_test(8)) { // huge page 2 MiB
-		return table.as_val + (addr & ones(12)); // get phys addr from phys page
+		return (table.as_val & ~ones(21)) + (addr & ones(21)); // get phys addr from phys page
 	}
 	// not 2 MiB huge page, so we can overwrite the table
 	table.as_val = table.as_addr[(addr >> 21) & ones(9)]; // get l1 base (l2 entry) given l2
