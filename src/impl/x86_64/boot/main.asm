@@ -14,10 +14,11 @@ start:
 	call check_apic
 	call check_fpu
 
-	; setup the FPU
-	mov edx, cr4
-	or edx, (1 << 9) | (1 << 10) ; set SSE support (allow ops) and XF Exception (want to have this to be able to handle SSE exceptions properly)
-	mov cr4, edx
+	; ; setup the FPU
+	; mov edx, cr4
+	; or edx, (1 << 9) | (1 << 10) ; set SSE support (allow ops) and XF Exception (want to have this to be able to handle SSE exceptions properly)
+	; mov cr4, edx
+	; finit
 
 	call setup_page_tables
 	call enable_paging
@@ -171,7 +172,7 @@ error:
 	hlt
 
 section .bss
-align 1024 * 4 ; page boundary
+alignb 1024 * 4 ; page boundary
 k_page_table_l4:
 	resq 512
 k_page_table_l3:

@@ -72,9 +72,9 @@ void print_ptr_bin(void* num);
 // format for these fns: print_<type>
 // * only have dec so no suffix
 // * floats, doubles, and ldoubles are always signed
-void print_float(float num, size_t precision);
-void print_double(double num, size_t precision);
-void print_ldouble(long double num, size_t precision);
+// void print_float(float num, size_t precision);
+// void print_double(double num, size_t precision);
+// void print_ldouble(long double num, size_t precision);
 
 void print_set_color(uint8_t fore, uint8_t back);
 void print_set_color_raw(uint8_t raw_color);

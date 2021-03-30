@@ -301,65 +301,65 @@ void print_byte_dec(signed char num) {
 #ifndef __GNUC__
 #pragma region others
 #endif
-void print_float(float num, size_t precision) {
-	if (num < 0.0f) {
-		print_char(NEG_SYMBOL);
-		num = -num;
-	}
-	unsigned long long whole_part = (unsigned long long)num;
-	print_ullong_dec(whole_part);
-	if (precision == 0) return;
-	num -= whole_part;
-	print_char(DECIMAL_SYMBOL);
-	num *= 10.0f;
-	do {
-		whole_part = (unsigned long long)num;
-		num -= whole_part;
-		print_char(DIGITS[(unsigned int)whole_part]);
-		num *= 10.0f;
-		precision--;
-	} while (num != 0.0f && precision != 0);
-}
+// void print_float(float num, size_t precision) {
+// 	if (num < 0.0f) {
+// 		print_char(NEG_SYMBOL);
+// 		num = -num;
+// 	}
+// 	unsigned long long whole_part = (unsigned long long)num;
+// 	print_ullong_dec(whole_part);
+// 	if (precision == 0) return;
+// 	num -= whole_part;
+// 	print_char(DECIMAL_SYMBOL);
+// 	num *= 10.0f;
+// 	do {
+// 		whole_part = (unsigned long long)num;
+// 		num -= whole_part;
+// 		print_char(DIGITS[(unsigned int)whole_part]);
+// 		num *= 10.0f;
+// 		precision--;
+// 	} while (num != 0.0f && precision != 0);
+// }
 
-void print_double(double num, size_t precision) {
-	if (num < 0.0f) {
-		print_char(NEG_SYMBOL);
-		num = -num;
-	}
-	unsigned long long whole_part = (unsigned long long)num;
-	print_ullong_dec(whole_part);
-	if (precision == 0) return;
-	num -= whole_part;
-	print_char(DECIMAL_SYMBOL);
-	num *= 10.0f;
-	do {
-		whole_part = (unsigned long long)num;
-		num -= whole_part;
-		print_char(DIGITS[(unsigned int)whole_part]);
-		num *= 10.0f;
-		precision--;
-	} while (num != 0.0f && precision != 0);
-}
+// void print_double(double num, size_t precision) {
+// 	if (num < 0.0f) {
+// 		print_char(NEG_SYMBOL);
+// 		num = -num;
+// 	}
+// 	unsigned long long whole_part = (unsigned long long)num;
+// 	print_ullong_dec(whole_part);
+// 	if (precision == 0) return;
+// 	num -= whole_part;
+// 	print_char(DECIMAL_SYMBOL);
+// 	num *= 10.0f;
+// 	do {
+// 		whole_part = (unsigned long long)num;
+// 		num -= whole_part;
+// 		print_char(DIGITS[(unsigned int)whole_part]);
+// 		num *= 10.0f;
+// 		precision--;
+// 	} while (num != 0.0f && precision != 0);
+// }
 
-void print_ldouble(long double num, size_t precision) {
-	if (num < 0.0f) {
-		print_char(NEG_SYMBOL);
-		num = -num;
-	}
-	unsigned long long whole_part = (unsigned long long)num;
-	print_ullong_dec(whole_part);
-	if (precision == 0) return;
-	num -= whole_part;
-	print_char(DECIMAL_SYMBOL);
-	num *= 10.0f;
-	do {
-		whole_part = (unsigned long long)num;
-		num -= whole_part;
-		print_char(DIGITS[(unsigned int)whole_part]);
-		num *= 10.0f;
-		precision--;
-	} while (num != 0.0f && precision != 0);
-}
+// void print_ldouble(long double num, size_t precision) {
+// 	if (num < 0.0f) {
+// 		print_char(NEG_SYMBOL);
+// 		num = -num;
+// 	}
+// 	unsigned long long whole_part = (unsigned long long)num;
+// 	print_ullong_dec(whole_part);
+// 	if (precision == 0) return;
+// 	num -= whole_part;
+// 	print_char(DECIMAL_SYMBOL);
+// 	num *= 10.0f;
+// 	do {
+// 		whole_part = (unsigned long long)num;
+// 		num -= whole_part;
+// 		print_char(DIGITS[(unsigned int)whole_part]);
+// 		num *= 10.0f;
+// 		precision--;
+// 	} while (num != 0.0f && precision != 0);
+// }
 #ifndef __GNUC__
 #pragma endregion
 #endif
