@@ -1,3 +1,5 @@
+#pragma once
+
 inline uint64_t get_cr3() {
 	uint64_t cr3;
 	asm ("mov %%cr3, %%rax\n\tmov %%rax, %0\n\t" : "=rm" (cr3) : : "%rax");

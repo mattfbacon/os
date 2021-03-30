@@ -1,3 +1,5 @@
+#pragma once
+
 struct __attribute__((packed)) tcb {
 	struct tcb* next; // next task pointer (for scheduling; forms a circular linked list)
 	uint64_t t_rsp; // stack pointer for the thread
