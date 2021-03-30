@@ -172,6 +172,11 @@ error:
 	hlt
 
 section .bss
+global interrupt_stack_top
+interrupt_stack_bottom:
+	resb 1024 ; 1 kb
+interrupt_stack_top:
+
 alignb 1024 * 4 ; page boundary
 k_page_table_l4:
 	resq 512
@@ -199,7 +204,7 @@ tss64:
 ; reserved
 	dq 0
 .ist1:
-	dq 0
+	dq interrupt_stack_top
 .ist2:
 	dq 0
 .ist3:

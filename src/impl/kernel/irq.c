@@ -168,7 +168,7 @@ void setup_idt() {
 		idt64[i] = (struct IDTDescr) {
 			(uint16_t)this_irq_ptr,
 			(uint16_t)CODE_SEGMENT_OFFSET,
-			0, // no TSS yet
+			1, // use interrupt stack #1
 			0b10001110, // present, (2 bits) ring 0, interrupt/trap gate, (4 bits) 32-bit interrupt gate
 			(uint16_t)(this_irq_ptr >> 16),
 			(uint32_t)(this_irq_ptr >> 32),
