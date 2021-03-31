@@ -6,6 +6,9 @@ RK equ 0x0c ; Red on blacK
 section .text
 bits 32
 start:
+	mov dword [multiboot_data_ptr], ebx
+	; `mov dword [multiboot_data_ptr+1], 0` is unnecessary since var is in bss section
+
 	mov esp, stack_top
 
 	call check_multiboot
@@ -172,6 +175,9 @@ error:
 	hlt
 
 section .bss
+global multiboot_data_ptr
+multiboot_data_ptr: resq 1
+
 global interrupt_stack_top
 interrupt_stack_bottom:
 	resb 1024 ; 1 kb
