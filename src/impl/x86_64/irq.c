@@ -128,7 +128,7 @@ void irq_handler(const unsigned char irq, const void*const rip, const uint32_t e
 			print_str("INT");
 			return;
 		default:
-			print_ubyte_hex(irq); print_char(' ');
+			print_char('I'); print_ubyte_hex(irq); print_char(' ');
 			break;
 	}
 	pic_sendEOI(irq);
