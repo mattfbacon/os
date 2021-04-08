@@ -1,6 +1,4 @@
 #include "print.h"
-#include "kmsg.h"
-#include "memman.h"
 
 void kernel_main() {
 	print_clear();
