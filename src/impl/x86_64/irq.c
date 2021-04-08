@@ -124,6 +124,8 @@ void irq_handler(const unsigned char irq, const void*const rip, const uint32_t e
 				pic_sendEOI(XLATE_TO_CTLR_IRQ(irq));
 			}
 			return;
+		case 0x2e: // ? get this during ATA PIO, what is it for??
+			break;
 		case 0x80:
 			print_str("INT");
 			return;
