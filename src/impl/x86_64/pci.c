@@ -18,7 +18,7 @@ uint32_t pci_read_config(const uint8_t bus, const uint8_t device, const uint8_t 
 	return ind(PCI_CONFIG_DATA);
 }
 
-bool pci_find_device_by_type(struct pci_device_index*const out, const uint8_t class, const uint8_t subclass, const uint8_t prog_if) {
+bool pci_find_device_by_type(struct pci_device_index*const out, const uint8_t class, const uint8_t subclass) {
 	for (uint16_t bus = 0; bus < (1 << 8); bus++) {
 		for (uint8_t slot = 0; slot < (1 << 5); slot++) {
 			for (uint8_t func = 0; func < (1 << 3); func++) {
@@ -27,7 +27,6 @@ bool pci_find_device_by_type(struct pci_device_index*const out, const uint8_t cl
 				if (
 					((result >> 24) & ones(8)) == class
 					&& ((result >> 16) & ones(8)) == subclass
-					&& ((result >> 8) & ones(8)) == prog_if
 				) {
 					*out = (struct pci_device_index) { bus, slot, func };
 					return true;
