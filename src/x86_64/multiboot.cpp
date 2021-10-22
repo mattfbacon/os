@@ -1,7 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include "multiboot.h"
-#include "print.h"
 
 const struct multiboot_tag* find_multiboot_tag_by_type(const uint32_t type, const struct multiboot_tag* start) {
 	union {

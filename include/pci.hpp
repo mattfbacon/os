@@ -8,7 +8,7 @@
 #define PCI_CONFIG_DATA 0xcfc
 
 struct pci_device_type {
-	uint8_t class;
+	uint8_t class_;
 	uint8_t subclass;
 	uint8_t prog_if;
 };
@@ -20,4 +20,4 @@ struct pci_device_index {
 };
 
 uint32_t pci_read_config(const uint8_t bus, const uint8_t slot, const uint8_t func, const uint8_t offset);
-bool pci_find_device_by_type(struct pci_device_index*const out, const uint8_t class, const uint8_t subclass);
+bool pci_find_device_by_type(struct pci_device_index*const out, const uint8_t class_, const uint8_t subclass);

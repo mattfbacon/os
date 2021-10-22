@@ -1,6 +1,6 @@
 #include "pci.h"
 #include "io.h"
-#include "print.h"
+#include "print.hpp"
 
 #define ones(n_bits) ((unsigned int)((1 << (n_bits)) - 1))
 #define bit_test(bit) ((unsigned int)(1 << ((bit) - 1)))
@@ -18,17 +18,17 @@ uint32_t pci_read_config(const uint8_t bus, const uint8_t device, const uint8_t 
 	return ind(PCI_CONFIG_DATA);
 }
 
-bool pci_find_device_by_type(struct pci_device_index*const out, const uint8_t class, const uint8_t subclass) {
-	for (uint16_t bus = out->bus; bus < (1 << 8); bus++) {
-		for (uint8_t slot = out->slot; slot < (1 << 5); slot++) {
-			for (uint8_t func = out->function; func < (1 << 3); func++) {
+bool pci_find_device_by_type(struct pci_device_index*const out, const uint8_t class_, const uint8_t subclass) {
+	for (uint16_t bus = out->bus; bus < ((uint16_t)1 << 8); bus++) {
+		for (uint8_t slot = out->slot; slot < ((uint8_t)1 << 5); slot++) {
+			for (uint8_t func = out->function; func < ((uint8_t)1 << 3); func++) {
 				const uint32_t result = pci_read_config(bus, slot, func, 2);
 				if (result == 0xffffffff) continue;
 				if (
-					((result >> 24) & ones(8)) == class
+					((result >> 24) & ones(8)) == class_
 					&& ((result >> 16) & ones(8)) == subclass
 				) {
-					*out = (struct pci_device_index) { bus, slot, func };
+					*out = (struct pci_device_index) { (uint8_t)bus, slot, func };
 					return true;
 				}
 			}

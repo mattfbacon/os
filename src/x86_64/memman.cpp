@@ -2,7 +2,6 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "memman.h"
-#include "print.h"
 
 union page_table_entry {
 	void* page_addr;

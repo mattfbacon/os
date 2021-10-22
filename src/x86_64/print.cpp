@@ -1,93 +1,52 @@
-#include "print.h"
+#include "print.hpp"
 
-#include <stdbool.h>
-#include <limits.h>
+template class Screen<NUM_ROWS, NUM_COLS, TAB_SIZE>;
+Screen<NUM_ROWS, NUM_COLS, TAB_SIZE> g_screen;
 
-static const size_t NUM_COLS = 80;
-static const size_t NUM_ROWS = 25;
-
-#define POS (col + NUM_COLS * row)
-
-struct Char {
-	uint8_t character;
-	uint8_t color;
+static const char DIGITS[16] __attribute__((nonstring)) = {
+	'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
 };
 
-volatile struct Char* buffer = (struct Char*)0xb8000;
-size_t col = 0;
-size_t row = 0;
-uint8_t color = PRINT_COLOR_WHITE | (PRINT_COLOR_BLACK << 4);
+static constexpr auto const NEG_SYMBOL = '-';
+static constexpr auto const DECIMAL_SYMBOL = '.';
+static constexpr auto const HEX_MASK = 0xf;
+static constexpr auto const HEX_BITS = 4;  // 4 bits per hex digit
+static constexpr auto const BYTE_BITS = 8;  // 8 bits per byte
+static constexpr auto const SHORT_BITS = (sizeof(short) * BYTE_BITS);
+static constexpr auto const INT_BITS = (sizeof(int) * BYTE_BITS);
+static constexpr auto const LONG_BITS = (sizeof(long) * BYTE_BITS);
+static constexpr auto const LLONG_BITS = (sizeof(long long) * BYTE_BITS);
+static constexpr auto const FLOAT_BITS = (sizeof(float) * BYTE_BITS);
+static constexpr auto const DOUBLE_BITS = (sizeof(double) * BYTE_BITS);
+static constexpr auto const LDOUBLE_BITS = (sizeof(long double) * BYTE_BITS);
+static constexpr auto const PTR_BITS = 64;  // number of bits in a pointer
+#define EXTRA_HEX_BITS(size) ((size)-HEX_BITS)  // number of bits after the top four
+static constexpr auto const NUM_DIGITS = (INT_BITS / HEX_BITS);  // number of hex digits in an int
 
-void clear_row(size_t row) {
-	struct Char empty = {
-		.character = ' ', .color = color
-	};
+extern "C" {
 
-	for (size_t col = 0; col < NUM_COLS; col++) {
-		buffer[POS] = empty;
-	}
+void print_char(char const x) {
+	g_screen.print_char(x);
 }
-
-void print_clear() {
-	for (size_t i = 0; i < NUM_ROWS; i++) {
-		clear_row(i);
-	}
+void print_str(char const* const x) {
+	g_screen.print_str(x);
 }
-
 void print_newline() {
-	col = 0;
-
-	if (row < NUM_ROWS - 1) {
-		row++;
-		return;
-	}
-
-	for (size_t cur_row = 1; cur_row < NUM_ROWS; cur_row++) {
-		for (size_t cur_col = 0; cur_col < NUM_COLS; cur_col++) {
-			buffer[cur_col + NUM_COLS * (cur_row - 1)] = buffer[cur_col + NUM_COLS * cur_row];
-		}
-	}
-
-	clear_row(NUM_ROWS - 1);
+	g_screen.print_newline();
 }
-
-void print_char(char character) {
-	if (character == '\n') {
-		print_newline();
-		return;
-	}
-	if (col >= NUM_COLS) {
-		print_newline();
-	}
-	buffer[POS] = (struct Char) {
-		.character = (uint8_t) character, .color = color
-	};
-
-	col++;
+void print_set_color(PrintColor const foreground, PrintColor const background) {
+	g_screen.color.set_foreground(foreground);
+	g_screen.color.set_background(background);
 }
-
-void print_str(const char* str) {
-	for (; *str != '\0'; str += sizeof(char)) {
-		print_char(*str);
-	}
+void print_set_color_raw(uint8_t const color) {
+	g_screen.color.data = color;
 }
-
-static const char DIGITS[16] __attribute__ ((nonstring)) = "0123456789abcdef"; // no null terminator
-#define NEG_SYMBOL '-'
-#define DECIMAL_SYMBOL '.'
-#define HEX_MASK 0xf
-#define HEX_BITS 4 // 4 bits per hex digit
-#define BYTE_BITS 8 // 8 bits per byte
-#define SHORT_BITS (sizeof(short) * BYTE_BITS)
-#define INT_BITS (sizeof(int) * BYTE_BITS)
-#define LONG_BITS (sizeof(long) * BYTE_BITS)
-#define LLONG_BITS (sizeof(long long) * BYTE_BITS)
-#define FLOAT_BITS (sizeof(float) * BYTE_BITS)
-#define DOUBLE_BITS (sizeof(double) * BYTE_BITS)
-#define LDOUBLE_BITS (sizeof(long double) * BYTE_BITS)
-#define PTR_BITS 64 // number of bits in a pointer
-#define EXTRA_HEX_BITS(size) ((size) - HEX_BITS) // number of bits after the top four
-#define NUM_DIGITS (INT_BITS / HEX_BITS) // number of hex digits in an int
+void print_ensure_line() {
+	g_screen.print_char('\f');
+}
+void print_clear() {
+	g_screen.clear();
+}
 
 // INTEGRAL TYPES
 
@@ -98,37 +57,37 @@ static const char DIGITS[16] __attribute__ ((nonstring)) = "0123456789abcdef"; /
 
 void print_ushort_hex(unsigned short num) {
 	for (size_t bits_left = SHORT_BITS; bits_left > 0; bits_left -= HEX_BITS, num <<= HEX_BITS) {
-		print_char(DIGITS[(num & ((unsigned short)HEX_MASK << EXTRA_HEX_BITS(SHORT_BITS))) >> EXTRA_HEX_BITS(SHORT_BITS)]);
+		g_screen.print_char(DIGITS[(num & ((unsigned short)HEX_MASK << EXTRA_HEX_BITS(SHORT_BITS))) >> EXTRA_HEX_BITS(SHORT_BITS)]);
 	}
 }
 
 void print_uint_hex(unsigned int num) {
 	for (size_t bits_left = INT_BITS; bits_left > 0; bits_left -= HEX_BITS, num <<= HEX_BITS) {
-		print_char(DIGITS[(num & ((unsigned int)HEX_MASK << EXTRA_HEX_BITS(INT_BITS))) >> EXTRA_HEX_BITS(INT_BITS)]);
+		g_screen.print_char(DIGITS[(num & ((unsigned int)HEX_MASK << EXTRA_HEX_BITS(INT_BITS))) >> EXTRA_HEX_BITS(INT_BITS)]);
 	}
 }
 
 void print_ulong_hex(unsigned long num) {
 	for (size_t bits_left = LONG_BITS; bits_left > 0; bits_left -= HEX_BITS, num <<= HEX_BITS) {
-		print_char(DIGITS[(num & ((unsigned long)HEX_MASK << EXTRA_HEX_BITS(LONG_BITS))) >> EXTRA_HEX_BITS(LONG_BITS)]);
+		g_screen.print_char(DIGITS[(num & ((unsigned long)HEX_MASK << EXTRA_HEX_BITS(LONG_BITS))) >> EXTRA_HEX_BITS(LONG_BITS)]);
 	}
 }
 
 void print_ullong_hex(unsigned long long num) {
 	for (size_t bits_left = LLONG_BITS; bits_left > 0; bits_left -= HEX_BITS, num <<= HEX_BITS) {
-		print_char(DIGITS[(num & ((unsigned long long)HEX_MASK << EXTRA_HEX_BITS(LLONG_BITS))) >> EXTRA_HEX_BITS(LLONG_BITS)]);
+		g_screen.print_char(DIGITS[(num & ((unsigned long long)HEX_MASK << EXTRA_HEX_BITS(LLONG_BITS))) >> EXTRA_HEX_BITS(LLONG_BITS)]);
 	}
 }
 
 void print_ubyte_hex(unsigned char num) {
-	print_char(DIGITS[(num & ((unsigned char)HEX_MASK << HEX_BITS)) >> HEX_BITS]);
-	print_char(DIGITS[num & HEX_MASK]);
+	g_screen.print_char(DIGITS[(num & ((unsigned char)HEX_MASK << HEX_BITS)) >> HEX_BITS]);
+	g_screen.print_char(DIGITS[num & HEX_MASK]);
 }
 
 void print_ptr_hex(void* ptr) {
 	uint64_t num = (uint64_t)ptr;
 	for (size_t bits_left = PTR_BITS; bits_left > 0; bits_left -= HEX_BITS, num <<= HEX_BITS) {
-		print_char(DIGITS[(num & ((uint64_t)HEX_MASK << EXTRA_HEX_BITS(PTR_BITS))) >> EXTRA_HEX_BITS(PTR_BITS)]);
+		g_screen.print_char(DIGITS[(num & ((uint64_t)HEX_MASK << EXTRA_HEX_BITS(PTR_BITS))) >> EXTRA_HEX_BITS(PTR_BITS)]);
 	}
 }
 #ifndef __GNUC__
@@ -140,12 +99,12 @@ void print_ptr_hex(void* ptr) {
 #endif
 // level 1.5: unsigned bin
 
-#define EXTRA_BIN_BITS(size) ((size) - 1)
+#define EXTRA_BIN_BITS(size) ((size)-1)
 #define BIN_MASK 0b1
 
 void print_ushort_bin(unsigned short num) {
 	for (size_t bits_left = SHORT_BITS; bits_left > 0; bits_left--, num <<= 1) {
-		print_char(DIGITS[(num & ((unsigned short)BIN_MASK << EXTRA_BIN_BITS(SHORT_BITS))) >> EXTRA_BIN_BITS(SHORT_BITS)]);
+		g_screen.print_char(DIGITS[(num & ((unsigned short)BIN_MASK << EXTRA_BIN_BITS(SHORT_BITS))) >> EXTRA_BIN_BITS(SHORT_BITS)]);
 	}
 }
 
@@ -191,7 +150,7 @@ void print_ptr_bin(void* ptr) {
 #define USHORT_MAX_DIGITS 5
 #define UINT_MAX_DIGITS 10
 #define ULONG_MAX_DIGITS 21
-#define ULLONG_MAX_DIGITS 21 // in GCC ullong is same size as ulong
+#define ULLONG_MAX_DIGITS 21  // in GCC ullong is same size as ulong
 
 void print_ushort_dec(unsigned short num) {
 	char buffer[USHORT_MAX_DIGITS] = { 0 };
@@ -363,15 +322,4 @@ void print_byte_dec(signed char num) {
 #ifndef __GNUC__
 #pragma endregion
 #endif
-
-void print_set_color(uint8_t fore, uint8_t back) {
-	color = fore | (back << 4);
-}
-
-void print_set_color_raw(uint8_t raw_color) {
-	color = raw_color;
-}
-
-void print_ensure_line() {
-	if (col != 0) print_newline();
 }

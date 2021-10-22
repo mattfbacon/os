@@ -1,11 +1,11 @@
-#include "print.h"
+#include "print.hpp"
 
-void kernel_main() {
+extern "C" void kernel_main() {
 	print_clear();
 	print_set_color(PRINT_COLOR_YELLOW, PRINT_COLOR_BLACK);
 	print_str("Welcome to 64-bit Land!\n");
 }
 
-void test_user_function() {
+extern "C" void test_user_function() {
 	print_char('U');
 }

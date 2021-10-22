@@ -8,7 +8,7 @@ struct __attribute__((packed)) gdt_tss_entry {
 	uint8_t access;
 	uint8_t limit_high: 4;
 	uint8_t attrs: 4;
-	uint64_t base_high: 40; // 32 bits added in 64-bit mode
+	uint64_t base_high: 40;  // 32 bits added in 64-bit mode
 	// this section added to TSS descriptors in 64-bit mode
 	uint8_t reserved_0;
 	uint8_t zero: 4;
@@ -16,7 +16,7 @@ struct __attribute__((packed)) gdt_tss_entry {
 };
 
 struct __attribute__((packed)) gdt_pointer {
-	uint16_t limit; // size - 1
+	uint16_t limit;  // size - 1
 	struct gdt_entry* base;
 };
 
@@ -26,7 +26,7 @@ extern struct gdt_pointer gdt64_pointer asm("gdt64.pointer");
 
 extern void tss64(void) asm("tss64") __attribute__((error("Not a function")));
 
-void setup_tss_in_gdt() {
+extern "C" void setup_tss_in_gdt() {
 	gdt64_tss.base_low = (uint64_t)&tss64;
 	gdt64_tss.base_high = (uint64_t)&tss64 >> 24;
 

@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stddef.h>
-#include "print.h"
+#include "print.hpp"
 #include "kmsg.h"
 
 static const uint8_t KERNEL_PRINT_COLORS[] = {

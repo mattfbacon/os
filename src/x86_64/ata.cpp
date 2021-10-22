@@ -14,8 +14,8 @@ bool identify_drive(bool secondary, uint16_t* data) {
 	}
 	while (true) {
 		uint8_t status = inb(0x1f7);
-		if (status && (1 << 3)) { break; } // continue with the procedure
-		if (status && (1 << 0)) { return false; } // error bit was set
+		if (status & (1 << 3)) { break; } // continue with the procedure
+		if (status & (1 << 0)) { return false; } // error bit was set
 	}
 	for (size_t i = 0; i < 256; i++) {
 		data[i] = inw(0x1f0);
