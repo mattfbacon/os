@@ -26,8 +26,8 @@ bochs -q
 - [x] Interrupt Handlers (including error codes)
 - [x] Paging
 - [x] Long Mode
-- [ ] Filesystem (in progress)
 - [ ] Memory Manager
+- [ ] Filesystem
 - [ ] Tasks + Scheduler
 - [ ] Software Interrupts (System Calls)
   - [ ] Request to map more memory (basis of something like `malloc`)
