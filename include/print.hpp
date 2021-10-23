@@ -221,8 +221,8 @@ void print_ubyte_dec(unsigned char num);
 void print_ubyte_bin(unsigned char num);
 void print_ubyte_oct(unsigned char num);
 // pointer (only has hex and bin, cast to long/ulong for others)
-void print_ptr_hex(void* num);
-void print_ptr_bin(void* num);
+void print_ptr_hex(void const* num);
+void print_ptr_bin(void const* num);
 // OTHER NUMERIC TYPES
 // format for these fns: print_<type>
 // * only have dec so no suffix

@@ -1,5 +1,5 @@
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 struct __attribute__((packed)) gdt_tss_entry {
 	// see https://xem.github.io/minix86/manual/intel-x86-and-64-manual-vol3/o_fe12b1e2a880e0ce-245.html
@@ -20,7 +20,7 @@ struct __attribute__((packed)) gdt_pointer {
 	struct gdt_entry* base;
 };
 
-extern void gdt64(void) asm("gdt64");
+extern void gdt64(void) asm("gdt64") __attribute__((error("Not a function")));
 extern struct gdt_tss_entry gdt64_tss asm("gdt64.tss_abs");
 extern struct gdt_pointer gdt64_pointer asm("gdt64.pointer");
 

@@ -19,12 +19,12 @@ enum e_loglevel {
 	KERNEL_WARN = 3,
 	KERNEL_ERR = 4,
 	KERNEL_CRIT = 5,
-	KERNEL_FATAL = 6
+	KERNEL_FATAL = 6,
 };
 
 extern enum e_loglevel kernel_log_level;
 
-void kprint(const char* const msg, const size_t msg_level);
+void kprint(char const* const msg, size_t const msg_level);
 
 #define klog(msg) (kprint(msg, KERNEL_LOG))
 #define kmsg(msg) (kprint(msg, KERNEL_MSG))

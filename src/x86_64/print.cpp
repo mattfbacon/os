@@ -1,3 +1,4 @@
+#include "bitops.hpp"
 #include "print.hpp"
 
 template class Screen<NUM_ROWS, NUM_COLS, TAB_SIZE>;
@@ -9,18 +10,6 @@ static const char DIGITS[16] __attribute__((nonstring)) = {
 
 static constexpr auto const NEG_SYMBOL = '-';
 static constexpr auto const DECIMAL_SYMBOL = '.';
-static constexpr auto const HEX_MASK = 0xf;
-static constexpr auto const HEX_BITS = 4;  // 4 bits per hex digit
-static constexpr auto const BYTE_BITS = 8;  // 8 bits per byte
-static constexpr auto const SHORT_BITS = (sizeof(short) * BYTE_BITS);
-static constexpr auto const INT_BITS = (sizeof(int) * BYTE_BITS);
-static constexpr auto const LONG_BITS = (sizeof(long) * BYTE_BITS);
-static constexpr auto const LLONG_BITS = (sizeof(long long) * BYTE_BITS);
-static constexpr auto const FLOAT_BITS = (sizeof(float) * BYTE_BITS);
-static constexpr auto const DOUBLE_BITS = (sizeof(double) * BYTE_BITS);
-static constexpr auto const LDOUBLE_BITS = (sizeof(long double) * BYTE_BITS);
-static constexpr auto const PTR_BITS = 64;  // number of bits in a pointer
-#define EXTRA_HEX_BITS(size) ((size)-HEX_BITS)  // number of bits after the top four
 static constexpr auto const NUM_DIGITS = (INT_BITS / HEX_BITS);  // number of hex digits in an int
 
 extern "C" {
@@ -84,7 +73,7 @@ void print_ubyte_hex(unsigned char num) {
 	g_screen.print_char(DIGITS[num & HEX_MASK]);
 }
 
-void print_ptr_hex(void* ptr) {
+void print_ptr_hex(void const* ptr) {
 	uint64_t num = (uint64_t)ptr;
 	for (size_t bits_left = PTR_BITS; bits_left > 0; bits_left -= HEX_BITS, num <<= HEX_BITS) {
 		g_screen.print_char(DIGITS[(num & ((uint64_t)HEX_MASK << EXTRA_HEX_BITS(PTR_BITS))) >> EXTRA_HEX_BITS(PTR_BITS)]);
@@ -132,7 +121,7 @@ void print_ubyte_bin(unsigned char num) {
 	}
 }
 
-void print_ptr_bin(void* ptr) {
+void print_ptr_bin(void const* ptr) {
 	uint64_t num = (uint64_t)ptr;
 	for (size_t bits_left = PTR_BITS; bits_left > 0; bits_left--, num <<= 1) {
 		print_char(DIGITS[(num & ((uint64_t)BIN_MASK << EXTRA_BIN_BITS(PTR_BITS))) >> EXTRA_BIN_BITS(PTR_BITS)]);
