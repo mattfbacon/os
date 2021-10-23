@@ -30,43 +30,46 @@ bochs -q
 - [ ] Memory Manager
 - [ ] Tasks + Scheduler
 - [ ] Software Interrupts (System Calls)
-	- [ ] Request to map more memory (basis of something like `malloc`)
-	- [ ] File IO (including `stdin` and `stdout`)
-	- [ ] Task Control (`fork`, `kill`, `waitpid`)
-	- [ ] Sleep
-	- [ ] Exit
-	- [ ] Shutdown, Reboot
+  - [ ] Request to map more memory (basis of something like `malloc`)
+  - [ ] File IO (including `stdin` and `stdout`)
+  - [ ] Task Control (`fork`, `kill`, `waitpid`)
+  - [ ] Sleep
+  - [ ] Exit
+  - [ ] Shutdown, Reboot
 - [ ] Executable Loading (then enter user-space!)
-	- [ ] Simple C library
+  - [ ] Simple C library
 
 ### User Space
+
 - [ ] Init Binary
 - [ ] Programs
-	- [ ] Shell
-	- [ ] Utilities a là GNU Coreutils
-	- [ ] Package Manager
+  - [ ] Shell
+  - [ ] Utilities a là GNU Coreutils
+  - [ ] Package Manager
 
 ### Kernel Space Again
+
 - [ ] Expanded Device Support
-	- [ ] USB
-	- [ ] Displays
-	- [ ] Thunderbolt??
+  - [ ] USB
+  - [ ] Displays
+  - [ ] Thunderbolt??
 - [ ] Implement `syscall` (as opposed to `int 0x80`)
 - [ ] Framebuffers (instead of BIOS text mode)
-	- [ ] Basic Support
-	- [ ] Double Buffering
+  - [ ] Basic Support
+  - [ ] Double Buffering
 - [ ] Allow Processes to Write to Graphics
-	- [ ] Probably another syscall
+  - [ ] Probably another syscall
 
 ### User Space Again
+
 - [ ] Basic Graphics Testing
 - [ ] Window Manager
-	- [ ] Graphics Library
-	- [ ] Display Server (like X11 or Wayland)
-	- [ ] Window Manager itself
+  - [ ] Graphics Library
+  - [ ] Display Server (like X11 or Wayland)
+  - [ ] Window Manager itself
 - [ ] GUI Toolkit (like GTK or QT)
 - [ ] GUI Applications
-	- [ ] Terminal Emulator
-	- [ ] File Manager
-	- [ ] Web Browser
+  - [ ] Terminal Emulator
+  - [ ] File Manager
+  - [ ] Web Browser
 - [ ] Porting other OSS to this OS
