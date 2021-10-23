@@ -23,7 +23,7 @@ bochs -q
 ### Kernel Space
 
 - [x] Boots!
-- [x] Interrupt Handlers (including error coes)
+- [x] Interrupt Handlers (including error codes)
 - [x] Paging
 - [x] Long Mode
 - [ ] Filesystem (in progress)
